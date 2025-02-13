@@ -1,0 +1,26 @@
+name: Create Branch from Issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+      contents: write
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create Branch
+        run: |
+          # branch 이름 추출 및 생성
+          BRANCH_NAME="feature/$(jq -r '.issue.body | fromjson | .branchName' $GITHUB_EVENT_PATH)"
+          
+          # git 설정 및 브랜치 생성
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -b "$BRANCH_NAME"
+          git push origin "$BRANCH_NAME"
