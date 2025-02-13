@@ -14,12 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }} # 현재 컨텍스트의 브랜치를 체크아웃
+          ref: ${{ github.ref_name }}
 
       - name: Create Branch
         run: |
-          # branch 이름 추출 및 생성
-          BRANCH_NAME="feature/$(jq -r '.issue.body | fromjson | .branchName' $GITHUB_EVENT_PATH)"
+          # issue 번호와 branch 이름 추출
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          BRANCH_NAME="feature/${ISSUE_NUMBER}-$(jq -r '.issue.body | fromjson | .branchName' $GITHUB_EVENT_PATH)"
 
           # git 설정 및 브랜치 생성
           git config user.name github-actions
