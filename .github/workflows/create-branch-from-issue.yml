@@ -1,8 +1,12 @@
+# .github/workflows/create-branch-from-issue.yml
 name: Create Branch from Issue
 
 on:
+  # for .github
   issues:
     types: [opened]
+  # for other repository
+  workflow_call:
 
 jobs:
   create_branch:
@@ -21,7 +25,7 @@ jobs:
           # Issue 번호 추출
           ISSUE_NUMBER="${{ github.event.issue.number }}"
 
-          # branchName 필드 추출 (수정된 파싱 방법)
+          # branchName 필드 추출
           BRANCH_NAME_PART=$(echo '${{ github.event.issue.body }}' | sed -n '/^### 브랜치 이름/,/^###/p' | sed '1d;$d' | tr -d '\n' | tr -d ' ')
 
           # 최종 브랜치 이름 생성
