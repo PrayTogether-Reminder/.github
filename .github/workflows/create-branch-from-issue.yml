@@ -18,9 +18,11 @@ jobs:
 
       - name: Create Branch
         run: |
-          # issue 번호와 branch 이름 추출
+          # Issue 번호 추출
           ISSUE_NUMBER="${{ github.event.issue.number }}"
-          BRANCH_NAME="feature/${ISSUE_NUMBER}-$(jq -r '.issue.body | fromjson | .branchName' $GITHUB_EVENT_PATH)"
+
+          # branchName 필드 추출 (Issue Form 형식에 맞춤)
+          BRANCH_NAME="feature/${ISSUE_NUMBER}-$(echo '${{ github.event.issue.body }}' | grep -A1 'branchName' | tail -n 1 | tr -d '[:space:]')"
 
           # git 설정 및 브랜치 생성
           git config user.name github-actions
