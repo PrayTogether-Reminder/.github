@@ -1,0 +1,26 @@
+#!/bin/bash
+# .git/hooks/prepare-commit-msg
+
+# 현재 브랜치 이름 가져오기
+BRANCH_NAME=$(git symbolic-ref --short HEAD)
+
+# feature/123-branch-name 형식에서 숫자 추출
+if [[ $BRANCH_NAME =~ feature/([0-9]+)- ]]; then
+    ISSUE_NUMBER="${BASH_REMATCH[1]}"
+    
+    # 커밋 메시지 파일 읽기
+    COMMIT_MSG=$(cat "$1")
+    
+    # 첫 줄 끝에 #issue_number 추가 (이미 있지 않은 경우에만)
+    if [[ ! $COMMIT_MSG =~ "#$ISSUE_NUMBER"$ ]]; then
+        # 첫 줄만 분리하고 나머지 내용 저장
+        FIRST_LINE=$(echo "$COMMIT_MSG" | head -n 1)
+        REST_OF_MSG=$(echo "$COMMIT_MSG" | tail -n +2)
+        
+        # 새로운 커밋 메시지 작성
+        echo "$FIRST_LINE #$ISSUE_NUMBER" > "$1"
+        if [ ! -z "$REST_OF_MSG" ]; then
+            echo "$REST_OF_MSG" >> "$1"
+        fi
+    fi
+fi
