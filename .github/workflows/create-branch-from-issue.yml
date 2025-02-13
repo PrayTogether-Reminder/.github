@@ -21,19 +21,11 @@ jobs:
           # Issue 번호 추출
           ISSUE_NUMBER="${{ github.event.issue.number }}"
 
-          # 디버깅을 위해 전체 body 출력
-          echo "Issue body:"
-          echo '${{ github.event.issue.body }}'
-
-          # branchName 추출 시도와 결과 확인
-          BRANCH_NAME_PART=$(echo '${{ github.event.issue.body }}' | grep -A1 'branchName' | tail -n 1)
-          echo "Extracted branch name part:"
-          echo "$BRANCH_NAME_PART"
+          # branchName 필드 추출 (수정된 파싱 방법)
+          BRANCH_NAME_PART=$(echo '${{ github.event.issue.body }}' | sed -n '/^### 브랜치 이름/,/^###/p' | sed '1d;$d' | tr -d '\n' | tr -d ' ')
 
           # 최종 브랜치 이름 생성
           BRANCH_NAME="feature/${ISSUE_NUMBER}-${BRANCH_NAME_PART}"
-          echo "Final branch name:"
-          echo "$BRANCH_NAME"
 
           # git 설정 및 브랜치 생성
           git config user.name github-actions
