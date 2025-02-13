@@ -1,2 +1,2 @@
 # .github
-common set for each repository
+common setting for each repository
